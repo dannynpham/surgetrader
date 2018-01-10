@@ -19,7 +19,7 @@ from . import mybittrex
 LOGGER = logging.getLogger(__name__)
 
 IGNORE_BY_IN = list()
-IGNORE_BY_IN.append('BURST') # https://steemit.com/cryptocurrency/@iceburst/the-death-of-burst-coin
+# IGNORE_BY_IN.append('BURST') # https://steemit.com/cryptocurrency/@iceburst/the-death-of-burst-coin
 IGNORE_BY_IN.append('UNO')   # in the processs of being delisted?
 IGNORE_BY_IN.append('START')
 IGNORE_BY_IN.append('UNB')
@@ -27,9 +27,9 @@ IGNORE_BY_IN.append('UNB')
 
 IGNORE_BY_FIND = 'ETH- USDT-'.split()
 MAX_ORDERS_PER_MARKET = 3
-MIN_PRICE = 0.00000125
-MIN_VOLUME = 12 # Must have at least 12 BTC in transactions over last 24 hours
-MIN_GAIN = 5 # need a 2 percent gain or it's not a surge!
+MIN_PRICE = 0.0000005
+MIN_VOLUME = 20 # Must have at least 12 BTC in transactions over last 24 hours
+MIN_GAIN = 4.0 # need a 2 percent gain or it's not a surge!
 PIPE = " | "
 
 

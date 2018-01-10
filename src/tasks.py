@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from invoke import task
 
 

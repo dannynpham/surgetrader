@@ -7,9 +7,7 @@
 # 
 
 INIS = """
-ini-steadyvest@protonmail.ini
-agnes.ini
-ini-steadyvest.strategic.ini
+teamLetsGetMoney.ini
 """
 
 def inis():

@@ -31,7 +31,7 @@ def open_order(result):
 
 def close_date(time_string):
     from datetime import datetime
-    datetime_format = '%Y-%m-%dT%H:%M:%S'
+    datetime_format = '%Y-%m-%d'
 
     time_strings = time_string.split('.')
     _dt = datetime.strptime(time_strings[0], datetime_format)
@@ -56,7 +56,7 @@ class GetTickerError(ReportError):
     def __init__(self, market):
         self.market = market
         self.message = "Unable to obtain ticker for ".format(market)
-        
+
 class NullTickerError(ReportError):
     """Exception raised for when exchange does not return a result for a ticker (normally due to a network glitch).
 
@@ -90,7 +90,7 @@ def numeric(p):
 
 
 def report_profit(user_config_file, exchange, on_date=None, skip_markets=None):
-    
+
     print("SKIP MARKETS={}".format(skip_markets))
 
     user_config = users.read(user_config_file)
@@ -121,7 +121,7 @@ def report_profit(user_config_file, exchange, on_date=None, skip_markets=None):
         if (not buy.sell_id) or (len(buy.sell_id) < 12):
             #print("No sell id ... skipping")
             continue
-        
+
         if skip_markets:
             leave = False
             for _skip_market in skip_markets:
@@ -129,10 +129,10 @@ def report_profit(user_config_file, exchange, on_date=None, skip_markets=None):
                 if _skip_market in buy.market:
                     print("{} is being skipped for this report".format(_skip_market))
                     leave = True
-                    
+
             if leave:
                 continue
-                    
+
 
         print("-------------------{}--------------".format(buy.order_id))
 
@@ -177,8 +177,8 @@ def report_profit(user_config_file, exchange, on_date=None, skip_markets=None):
             so['Quantity'] = "{:d}%".format(int(p))
 
         calculations = {
-            'sell_closed': so['Closed'],
-            'buy_opened': bo['Opened'],
+            'sell_closed': close_date(so['Closed']),
+            'buy_opened': close_date(bo['Opened']),
             'market': so['Exchange'],
             'units_sold': so['Quantity'],
             'sell_price': so['PricePerUnit'],
@@ -245,7 +245,8 @@ def report_profit(user_config_file, exchange, on_date=None, skip_markets=None):
 
     total_profit = 0
     iterator = html_template.findmeld('closed_orders').repeat(closed_orders)
-    for element, data in iterator:
+    for i, (element, data) in enumerate(iterator):
+        data["sell_number"] = i + 1
         total_profit += render_row(element, data)
 
     deposit = float(user_config.get('trade', 'deposit'))
@@ -258,6 +259,7 @@ def report_profit(user_config_file, exchange, on_date=None, skip_markets=None):
     if not total_profit:
         s.replace("No closed trades!")
     else:
+        del(data['sell_number'])
         render_row(s, data, append="2")
 
     print("Open Orders={}".format(open_orders))
@@ -269,7 +271,7 @@ def report_profit(user_config_file, exchange, on_date=None, skip_markets=None):
 
     iterator = open_orders_element.repeat(open_orders)
     for i, (element, data) in enumerate(iterator):
-        data["sell_number"] = i+1
+        data["sell_number"] = i + 1
         render_row(element, data, append="3")
 
     for setting in 'deposit trade top takeprofit preserve'.split():
@@ -307,13 +309,13 @@ def notify_admin(msg, user_config, sys_config):
                  recipient=recipient,
                  bcc=None
                  )
-    
-    
+
+
 
 import json
 @retry(exceptions=json.decoder.JSONDecodeError, tries=600, delay=5)
 def main(ini, english_date, _date=None, email=True, skip_markets=None):
-    
+
     print("profit.main.SKIP MARKETS={}".format(skip_markets))
 
 
@@ -325,7 +327,7 @@ def main(ini, english_date, _date=None, email=True, skip_markets=None):
     exchange = mybittrex.make_bittrex(user_config)
     try:
         html, total_profit = report_profit(config_file, exchange, _date, skip_markets)
-        
+
         if email:
             subject = "{}'s Profit Report for {}".format(english_date, ini)
             sender = sys_config.get('email', 'sender')
@@ -336,7 +338,7 @@ def main(ini, english_date, _date=None, email=True, skip_markets=None):
                          recipient=recipient,
                          bcc=sys_config.get('email', 'bcc')
                          )
-    
+
     except Exception as e:
         error_msg = traceback.format_exc()
         print('Aborting: {}'.format(error_msg))
@@ -350,3 +352,4 @@ if __name__ == '__main__':
     ts = '2017-10-15T21:28:21.05'
     dt = close_date(ts)
     print(dt)
+

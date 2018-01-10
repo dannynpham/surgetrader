@@ -13,6 +13,8 @@ markets.json
 *.table
 *.db
 
+src/tmp/*
+
 __pycache__/
 *.py[cod]
 *$py.class
