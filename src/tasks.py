@@ -16,19 +16,20 @@ def listify_ini(ini):
 @task
 def profitreport(_ctx, ini=None, date_string=None, skip_markets=None):
     import lib.report.profit
-    
-    
-    print("tasks.SKIP MARKETS={}".format(skip_markets))
 
+    print("tasks.SKIP MARKETS={}".format(skip_markets))
 
     inis = listify_ini(ini)
 
     if date_string:
         from datetime import date
-        if date_string == 'yesterday':
+        if date_string == "yesterday":
             date_string = "Yesterday"
             _date = date.fromordinal(date.today().toordinal()-1)
-        elif date_string == 'lastmonth':
+        elif date_string == "today":
+            date_string = "Today"
+            _date = date.fromordinal(date.today().toordinal())
+        elif date_string == "lastmonth":
             date_string = "Last month"
             from dateutil.relativedelta import relativedelta
             today = date.today()
@@ -42,9 +43,9 @@ def profitreport(_ctx, ini=None, date_string=None, skip_markets=None):
             raise Exception("Unrecognized date option")
     else:
         _date = None
-        
+
     if skip_markets:
-        skip_markets=skip_markets.split()
+        skip_markets = skip_markets.split()
 
     print("tasks2.SKIP MARKETS={}".format(skip_markets))
 
